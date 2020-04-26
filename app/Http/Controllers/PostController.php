@@ -3,17 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Http\Controllers\Controller;
+use App\Repositories\Post\PostRepository;
 
 class PostController extends Controller
 {
+
+    public function __construct(PostRepository $postRepository)
+    {
+        $this->postRepository = $postRepository;
+    }
+
     public function index()
     {
-        $post = Post::with('user')
-            ->withCount('comment')
-            ->get();
-
+        $data = $this->postRepository->getAll();
         return view('posts.index')
-            ->with('post', $post);
+            ->with('post', $data);
     }
 
     public function show(Post $post)
