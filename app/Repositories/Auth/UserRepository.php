@@ -2,14 +2,14 @@
 
 namespace App\Repositories\Auth;
 
-use App\Models\User;
 use App\Events\User\UserCreated;
-use Illuminate\Support\Facades\DB;
 use App\Exceptions\GeneralException;
+use App\Models\User;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class AuthRepository extends BaseRepository
+class UserRepository extends BaseRepository
 {
     public function __construct(User $model)
     {
