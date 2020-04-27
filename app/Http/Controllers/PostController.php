@@ -17,14 +17,12 @@ class PostController extends Controller
     public function index()
     {
         $data = $this->postRepository->getAll();
-        return view('posts.index')
-            ->with('post', $data);
+        return view('posts.index')->with('post', $data);
     }
 
     public function show(Post $post)
     {
         $post->comments = $post->comment()->with('user')->get();
-        return view('posts.show')
-            ->with('show', $post);
+        return view('posts.show')->with('show', $post);
     }
 }
