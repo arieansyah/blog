@@ -2,39 +2,47 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
+use App\Events\User\UserLoggedin;
+use App\Events\User\UserLoggedOut;
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
     use AuthenticatesUsers;
+
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
+    }
 
     /**
      * Where to redirect users after login.
      *
-     * @var string
+     * @return string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+     protected $redirectTo = '/home';
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function __construct()
+    public function showLoginForm()
     {
-        $this->middleware('guest')->except('logout');
+        return view('auth.login');
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        event(new UserLoggedin($user));
+        return redirect()->intended($this->redirectPath())->withSuccess('Wellcome Back '. $user->name);
+    }
+
+    public function logout(Request $request)
+    {
+        event(new UserLoggedOut($request->user()));
+        $this->guard()->logout();
+        $request->session()->invalidate();
+        return redirect()->action('PostController@index')->withSuccess('Good Bye');
     }
 }
